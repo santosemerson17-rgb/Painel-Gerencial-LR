@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Painel de Planilhas</title>
+
+<style>
+
+body{
+font-family: Arial;
+margin:0;
+display:flex;
+background:linear-gradient(135deg,#1e1e1e,#2f2f2f);
+}
+
+/* MENU LATERAL */
+
+.sidebar{
+width:240px;
+background:#111827;
+color:white;
+height:100vh;
+padding:20px;
+}
+
+.sidebar h2{
+margin-bottom:25px;
+}
+
+.menu-item{
+padding:12px;
+margin-bottom:8px;
+cursor:pointer;
+border-radius:6px;
+}
+
+.menu-item:hover{
+background:#374151;
+}
+
+/* CONTEUDO */
+
+.content{
+flex:1;
+padding:30px;
+}
+
+/* GRID DE PLANILHAS */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:20px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
+position:relative;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+}
+
+/* TITULO */
+
+.card-title{
+font-size:16px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+/* LINK */
+
+.open-btn{
+display:inline-block;
+margin-top:10px;
+padding:8px 12px;
+background:#2563eb;
+color:white;
+border-radius:6px;
+text-decoration:none;
+font-size:13px;
+}
+
+/* AÇÕES NO CANTO */
+
+.actions{
+position:absolute;
+top:8px;
+right:8px;
+display:flex;
+gap:5px;
+}
+
+.icon{
+cursor:pointer;
+font-size:14px;
+padding:4px;
+}
+
+.icon:hover{
+transform:scale(1.2);
+}
+
+/* SELETOR */
+
+.open-mode{
+position:absolute;
+bottom:10px;
+right:10px;
+font-size:20px;
+}
+
+.inicio-container{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+
+background:white;
+padding:40px;
+border-radius:20px;
+
+box-shadow:0 6px 30px rgba(0,0,0,0.08);
+
+max-width:1000px;
+width:500%;
+margin:auto;
+
+box-sizing:border-box;
+}
+
+.logo{
+width:260px;
+margin-top:-30px;
+margin-bottom:40px;
+animation:fadeLogo 1.6s ease;
+}
+
+.titulo-painel{
+
+font-size:60px;
+font-weight:700;
+
+color:#9ed6a3;
+
+text-align:center;
+
+text-shadow:
+0 0 8px rgba(158,214,163,0.6),
+0 0 18px rgba(158,214,163,0.4);
+
+margin-bottom:25px;
+
+}
+
+.titulo-painel span{
+
+display:block;
+margin-top:10px;
+
+font-size:55px;
+font-weight:600;
+
+color:#9ed6a3;
+
+text-shadow:
+0 0 8px rgba(158,214,163,0.6),
+0 0 18px rgba(158,214,163,0.4);
+}
+
+@keyframes fadeLogo{
+
+from{
+opacity:0;
+transform:translateY(-20px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+.inicio-container p{
+color:#555;
+margin-bottom:30px;
+font-size:18px;
+}
+
+.info-box{
+display:flex;
+gap:60px;
+margin-bottom:30px;
+font-size:16px;
+}
+
+.btn-entrar{
+
+background:#2563eb;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:8px;
+
+font-size:16px;
+cursor:pointer;
+}
+
+.btn-entrar:hover{
+background:#1d4ed8;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>Painel</h2>
+
+<div class="menu-item" onclick="abrirInicio('inicio')">🏠 Inicio</div>
+<div class="menu-item" onclick="abrirAba('devolucao')">📄 Planilhas de Devolução</div>
+<div class="menu-item" onclick="abrirAba('finalizacao')">✅ Finalização de Casos</div>
+<div class="menu-item" onclick="abrirAba('app')">📱 APP</div>
+<div class="menu-item" onclick="abrirAba('recusas')">🔙 Recusas</div>
+<div class="menu-item" onclick="abrirAba('touchpoint')">📍 Touchpoint</div>
+<div class="menu-item" onclick="abrirAba('IT')"> 📃 Instrução de trabalho</div>
+<div class="menu-item" onclick="abrirAba('favoritos')">⭐ Favoritos</div>
+
+</div>
+
+<div class="content">
+
+<div class="grid" id="grid"></div>
+
+</div>
+
+<script>
+
+let favoritos = JSON.parse(localStorage.getItem("favoritos")) || []
+
+
+const dados = {
+
+devolucao:[
+
+{
+nome:"Planilha Devolução 2026",
+link:"https://agcompany-my.sharepoint.com/:x:/r/personal/emerson_santos-1_corteva_com/Documents/Planilhas%20Devolu%C3%A7%C3%A3o/Planilha%20Devolu%C3%A7%C3%A3o%202026.xlsm?d=w5582a511643542e486cfae9ab1d336c6&csf=1&web=1&e=tx14V8"
+},
+
+{
+nome:"Planilha Devolução 2025",
+link:"https://agcompany-my.sharepoint.com/:x:/r/personal/emerson_santos-1_corteva_com/Documents/Planilha%20Devolu%C3%A7%C3%A3o%202025%20(1).xlsm?d=w2c156701d46741b6ba7e5c80b209102f&csf=1&web=1&e=uqpekC"
+},
+
+{
+nome:"Planilha Devolução 2024",
+link:"https://agcompany-my.sharepoint.com/:x:/r/personal/amanda_costa_corteva_com1/Documents/LOG%C3%8DSTICA%20REVERSA%20EVOLOG/CONTROLE%20DE%20COLETAS%20LOG%C3%8DSTICA%20REVERSA%20%20-%202024.xlsm?d=w078d23a363c14b5384ca7f3a8188477f&csf=1&web=1&e=XCVJAi"
+}
+
+],
+
+finalizacao:[
+
+{
+nome:"Encerrar Casos",
+link:"https://agcompany-my.sharepoint.com/:x:/r/personal/emerson_santos-1_corteva_com/Documents/Encerrar%20Casos%20Dev.%20e%20Rec..xlsx?d=wb57bb497f785454183630023c043e206&e=4%3a1e056bfcb9c94d548f3961be5ea57fb3&sharingv2=true&fromShare=true&at=9"
+}
+
+],
+
+app:[
+
+{
+nome:"Link APP",
+link:"https://apps.powerapps.com/play/e/default-3e20ecb2-9cb0-4df1-ad7b-914e31dcdda4/a/143483f4-22bd-4b17-af29-1b27d4d00ad4?tenantId=3e20ecb2-9cb0-4df1-ad7b-914e31dcdda4&hint=f76dc52a-1d58-4d90-b3b9-d8d77794b503&sourcetime=1741623115733&source=portal#"
+},
+
+{
+nome:"Relatório APP Devolução",
+link:"https://agcompany-my.sharepoint.com/personal/emerson_santos-1_corteva_com/Documents/Arquivo%20Sales%20Force%20email/Relat%C3%B3rio_Aplicativo.xlsx"
+},
+
+{
+nome:"Notas Devolução Sem Crédito",
+link:"https://agcompany.sharepoint.com/:x:/r/teams/brazilsupplychain/_layouts/15/Doc.aspx?sourcedoc=%7B432B0F1D-EDE6-4CB6-9A41-496D32576CC7%7D&file=Atualiza%25u00e7%25u00e3o%20evolog%20-%20Notas%20de%20devolu%25u00e7%25u00e3o%20sem%20credito.xlsx&wdLOR=c13DDA4B7-CFA6-42A4-8E93-37F1FE96ABB1&fromShare=true&action=default&mobileredirect=true"
+},
+
+{
+nome:"Controle Registros APP",
+link:"https://agcompany-my.sharepoint.com/personal/emerson_santos-1_corteva_com/Documents/Planilhas%20Devolu%C3%A7%C3%A3o/Controle%20de%20processamentos%20LR.xlsm"
+}
+
+],
+
+recusas:[
+
+{
+nome:"Controle de Processamentos LR",
+link:"https://agcompany-my.sharepoint.com/:x:/r/personal/emerson_santos-1_corteva_com/Documents/Arquivo%20Sales%20Force%20email/Controle%20de%20recusas%20e%20Dev.%20no%20Ato.xlsm?d=w3b94c0e07b424068bde6f3de0f2c760c&csf=1&web=1&e=sBckuZ"
+},
+
+{
+nome:"Recusas 2024/2025",
+link:"https://agcompany-my.sharepoint.com/personal/emerson_santos-1_corteva_com/Documents/Arquivo%20Sales%20Force%20email/LOGISTICA%20REVERSA%20-%20CORTEVA%202024.xlsx"
+}
+
+
+],
+
+touchpoint:[
+
+{
+nome:"Planilha de Touchpoint/BI",
+link:"https://agcompany-my.sharepoint.com/personal/emerson_santos-1_corteva_com/Documents/Atualiza%C3%A7%C3%A3o%20BI/Montagem%20BI.xlsx"
+},
+
+{
+nome:"BI Reversa",
+link:"https://app.powerbi.com/links/N5nBG1fsHZ?ctid=3e20ecb2-9cb0-4df1-ad7b-914e31dcdda4&pbi_source=linkShare"
+}
+
+],
+
+IT:[
+
+{
+nome:"Pasta IT",
+link:"https://bravologcombr0.sharepoint.com/:f:/r/sites/LogsticaReversaEvolog/Shared%20Documents/Geral/Procedimentos?d=webc347bbe3a143059f1f62c8ef636c4b&csf=1&web=1&e=KJTHk9"
+}
+
+]
+
+}
+
+
+function abrirAba(aba){
+
+const grid = document.getElementById("grid")
+
+grid.innerHTML=""
+
+let lista = []
+
+if(aba==="favoritos"){
+
+lista = favoritos
+
+}else{
+
+lista = dados[aba] || []
+
+}
+
+lista.forEach(planilha =>{
+
+const card = document.createElement("div")
+
+card.className="card"
+
+card.innerHTML = `
+
+<div class="actions">
+
+<span class="icon" onclick='favoritar(${JSON.stringify(planilha)})'>⭐</span>
+
+<span class="icon" onclick='baixar("${planilha.link}")'>⬇</span>
+
+${aba==="favoritos" ? `<span class="icon" onclick='removerFavorito("${planilha.link}")'>❌</span>`:""}
+
+</div>
+
+<div class="card-title">${planilha.nome}</div>
+
+<a class="open-btn" href="${planilha.link}" target="_blank">Abrir Link</a>
+
+<select class="open-mode" onchange='abrirModo(this.value,"${planilha.link}")'>
+
+<option selected disabled>Abrir...</option>
+
+<option value="excel">Excel</option>
+
+<option value="online">Online</option>
+
+</select>
+
+`
+
+grid.appendChild(card)
+
+})
+
+}
+
+
+/* FAVORITAR */
+
+function favoritar(planilha){
+
+if(!favoritos.find(p=>p.link===planilha.link)){
+
+favoritos.push(planilha)
+
+localStorage.setItem("favoritos",JSON.stringify(favoritos))
+
+alert("Adicionado aos favoritos")
+
+}
+
+}
+
+/* REMOVER */
+
+function removerFavorito(link){
+
+favoritos = favoritos.filter(p=>p.link!==link)
+
+localStorage.setItem("favoritos",JSON.stringify(favoritos))
+
+abrirAba("favoritos")
+
+}
+
+/* DOWNLOAD */
+
+function baixar(link){
+
+let downloadLink = link;
+
+/* remove parâmetros existentes */
+downloadLink = downloadLink.split("?")[0];
+
+/* força download */
+downloadLink = downloadLink + "?download=1";
+
+window.open(downloadLink, "_blank");
+
+}
+
+/* ABRIR MODO */
+
+function abrirModo(modo,link){
+
+if(modo==="excel"){
+
+const excelLink = "ms-excel:ofe|u|" + link
+window.location.href = excelLink
+
+}
+
+if(modo === "online"){
+
+window.open(link + "?web=1", "_blank")
+
+}
+
+}
+/* INICIO */
+
+abrirInicio()
+
+function abrirInicio(){
+
+const grid = document.getElementById("grid")
+
+grid.innerHTML = `
+
+<div class="inicio-container">
+
+<img src="https://www.anicer.com.br/wp-content/uploads/2015/01/LOGISTICA-REVERSA1.png" class="logo">
+
+<h1 class="titulo-painel">
+Painel Gerencial<br>
+<span>Controle de Planilhas</span>
+</h1>
+
+<p>
+Central de acesso rápido às planilhas operacionais.<br>
+Utilize o menu lateral para navegar entre os recursos.
+</p>
+
+<div class="info-box">
+
+<div>
+📅 Data: ${new Date().toLocaleDateString()}
+</div>
+
+<div>
+📊 Total de Planilhas: ${Object.values(dados).flat().length}
+</div>
+
+<div>
+⭐ Favoritos: ${favoritos.length}
+</div>
+
+</div>
+</div>
+`
+
+}
+
+</script>
+
+</body>
+</html>
